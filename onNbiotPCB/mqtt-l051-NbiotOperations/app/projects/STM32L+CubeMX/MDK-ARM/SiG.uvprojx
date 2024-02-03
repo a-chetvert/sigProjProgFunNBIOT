@@ -903,6 +903,31 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>prf</GroupName>
+          <Files>
+            <File>
+              <FileName>MQTT_RC_periphery.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\source\platform\stm32L+CubeMX\MQTT_RC_periphery.h</FilePath>
+            </File>
+            <File>
+              <FileName>MQTT_RC_periphery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\source\platform\stm32L+CubeMX\MQTT_RC_periphery.c</FilePath>
+            </File>
+            <File>
+              <FileName>perefery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\source\platform\stm32L+CubeMX\perefery.c</FilePath>
+            </File>
+            <File>
+              <FileName>perefery.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\source\platform\stm32L+CubeMX\perefery.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>

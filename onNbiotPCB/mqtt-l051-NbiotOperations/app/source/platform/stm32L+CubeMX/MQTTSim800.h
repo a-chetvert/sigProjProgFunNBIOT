@@ -33,13 +33,11 @@
  * ------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-#include <main.h>
+// my periphery lib
+#include "MQTT_RC_periphery.h"
 
-// === CONFIG ===
-#define UART_SIM800 &huart1
-#define FREERTOS    0
-#define CMD_DELAY   10
-// ==============
+#include "MQTTPacket.h"
+
 
 typedef struct {
     char *apn;

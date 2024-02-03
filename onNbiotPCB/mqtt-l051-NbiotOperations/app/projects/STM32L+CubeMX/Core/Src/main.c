@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "usart.h"
 #include "rtc.h"
 #include "gpio.h"
 
@@ -146,7 +147,7 @@ void SystemClock_Config(void);
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart1) 
 {
-    if (&huart1 == UART_SIM800) 
+    if (&hlpuart1 == UART_RC) 
 		{
         Sim800_RxCallBack();
     }
@@ -203,6 +204,7 @@ int main(void)
   MX_DMA_Init();
   MX_RTC_Init();
   MX_ADC_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
 
@@ -278,9 +280,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_LPUART1
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_LPUART1
                               |RCC_PERIPHCLK_RTC;
-  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_SYSCLK;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.Lpuart1ClockSelection = RCC_LPUART1CLKSOURCE_PCLK1;
   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
@@ -290,64 +292,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-//включение DCDC
-
-
-
-
-void check2BatOn(void)
-{
-	HAL_GPIO_WritePin(BAT2_CHECK_GPIO_Port, BAT2_CHECK_Pin, GPIO_PIN_SET);
-}
-
-void check2BatOff(void)
-{
-	HAL_GPIO_WritePin(BAT2_CHECK_GPIO_Port, BAT2_CHECK_Pin, GPIO_PIN_RESET);
-}
-
-void check1BatOn(void)
-{
-	HAL_GPIO_WritePin(BAT1_CHECK_GPIO_Port, BAT1_CHECK_Pin, GPIO_PIN_SET);
-}
-
-void check1BatOff(void)
-{
-	HAL_GPIO_WritePin(BAT1_CHECK_GPIO_Port, BAT1_CHECK_Pin, GPIO_PIN_RESET);
-}
-
-void simSupOn(void)
-{
-	HAL_GPIO_WritePin(DCDC_EN_GPIO_Port, DCDC_EN_Pin, GPIO_PIN_SET);
-}
-
-void simSupOff(void)
-{
-	HAL_GPIO_WritePin(DCDC_EN_GPIO_Port, DCDC_EN_Pin, GPIO_PIN_RESET);
-}
-
-void testPinOn(void)
-{
-	HAL_GPIO_WritePin(MCU_GPIO_GPIO_Port, MCU_GPIO_Pin, GPIO_PIN_RESET);
-}
-
-void testPinOff(void)
-{
-	HAL_GPIO_WritePin(MCU_GPIO_GPIO_Port, MCU_GPIO_Pin, GPIO_PIN_SET);
-}
-
-void apdsPwrOn(void)
-{
-	HAL_GPIO_WritePin(APDS_PWR_GPIO_Port, APDS_PWR_Pin, GPIO_PIN_SET);
-	HAL_Delay(5);
-//	apdsShdnOn();
-}
-
-void apdsPwrOff(void)
-{
-//	apdsShdnOff();
-	HAL_Delay(5);
-	HAL_GPIO_WritePin(APDS_PWR_GPIO_Port, APDS_PWR_Pin, GPIO_PIN_RESET);
-}
 
 void standbyStart(void)
 {
@@ -360,7 +304,7 @@ void standbyStart(void)
 void startCapGsm(void)
 {	
 	//	включаем питание
-	simSupOn();
+//	simSupOn();
 	//	инициализация таймера
 	HAL_Delay(10);
 
@@ -381,17 +325,18 @@ void startCapGsm(void)
 void sim800Sending(void)
 {
 
+	rcCapOn();
+	HAL_Delay(3000);
+	rcPwrOn();
 	HAL_Delay(1000);
-	HAL_GPIO_WritePin(GSM_PWR_GPIO_Port, GSM_PWR_Pin, GPIO_PIN_SET);
-	HAL_Delay(1000);
-	HAL_GPIO_WritePin(GSM_PWR_GPIO_Port, GSM_PWR_Pin, GPIO_PIN_RESET);
+	rcPwrOff();
 	HAL_Delay(1000);
 	char str[62] = {0};
 	char str_[128] = {0};
 
 	HAL_Delay(20000);	
-	MX_USART1_UART_Init();
-		HAL_Delay(100);	
+	MX_LPUART1_UART_Init();
+	HAL_Delay(100);	
 	SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(10000);		
 	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
@@ -481,7 +426,7 @@ void sim800Sending(void)
 		
 	SIM800_SendCommand("AT+CMQDISCON=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(1000);	
-	
+	rcCapOff();
 	HAL_Delay(5000);		
 	
 	
@@ -491,9 +436,9 @@ void sim800Sending(void)
 
 	testPinOn();
 
-//HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
+// HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
 	
-//	HAL_RTCEx_SetWakeUpTimer(&hrtc);
+// HAL_RTCEx_SetWakeUpTimer(&hrtc);
 
 	HAL_Delay(4000);
 	simSupOff();

@@ -1,8 +1,7 @@
 #ifndef PEREFERY_H_
 #define PEREFERY_H_
 //------------------------------------------------
-////#include "stm32f4xx_hal.h"
-//#include "stdint.h"
+#include "main.h"
 //#include "lcd.h"
 //#include "button.h"
 
@@ -12,6 +11,24 @@
 //  MENU_STATE_WAIT,
 //  MENU_STATE_MAIN,
 //}MENU_StateTypeDef;
+
+#define UART_RC &hlpuart1
+
+void checkBatOn(void);
+void checkBatOff(void);
+void backupOn(void);
+void backupOff(void);
+void testPinOn(void);
+void testPinOff(void);
+void apdsPwrOn(void);
+void apdsPwrOff(void);
+void apdsShdnOn(void);
+void apdsShdnOff(void);
+void rcPwrOn(void);
+void rcPwrOff(void);
+void rcCapOn(void);
+void rcCapOff(void);
+
 
 //typedef enum {
 //  MAIN_MENU_STATE_IDLE = 0,

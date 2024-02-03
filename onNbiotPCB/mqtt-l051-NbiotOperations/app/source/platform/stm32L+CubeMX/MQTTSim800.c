@@ -32,16 +32,15 @@
  * ------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
+
+
+
 #include "MQTTSim800.h"
-#include "main.h"
-#include "usart.h"
-#include <string.h>
-#include "MQTTPacket.h"
 
 
 extern SIM800_t SIM800;
 //#ifndef
-#define UART_SIM800 &huart1
+#define UART_RC &hlpuart1
 //#endif
 
 uint8_t rx_data = 0;
@@ -108,7 +107,7 @@ void Sim800_RxCallBack(void)
         clearRxBuffer();
         clearMqttBuffer();
     }
-    HAL_UART_Receive_IT(UART_SIM800, &rx_data, 1);
+    HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
 }
 
 /**
@@ -143,7 +142,7 @@ void clearMqttBuffer(void)
  */
 int SIM800_SendCommand(char *command, char *reply, uint16_t delay)
 {
-    HAL_UART_Transmit_IT(UART_SIM800, (unsigned char *)command,
+    HAL_UART_Transmit_IT(UART_RC, (unsigned char *)command,
                          (uint16_t)strlen(command));
 
 #if FREERTOS == 1
@@ -175,7 +174,7 @@ int SIM800_SendCommand(char *command, char *reply, uint16_t delay)
 //    SIM800.mqttServer.connect = 0;
 //    int error = 0;
 //    char str[32] = {0};
-//    HAL_UART_Receive_IT(UART_SIM800, &rx_data, 1);
+//    HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
 //		
 //    SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
 //    SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
@@ -196,7 +195,7 @@ int MQTT_Init(void)
     SIM800.mqttServer.connect = 0;
     int error = 0;
     char str[62] = {0};
-    HAL_UART_Receive_IT(UART_SIM800, &rx_data, 1);
+    HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
 		
  //   SIM800_SendCommand("AT\r\n", "OK\r\n", 1000);
    
@@ -240,7 +239,7 @@ void MQTT_Connect(void)
         datas.keepAliveInterval = SIM800.mqttClient.keepAliveInterval;
         datas.cleansession = 1;
         int mqtt_len = MQTTSerialize_connect(buf, sizeof(buf), &datas);
-        HAL_UART_Transmit_IT(UART_SIM800, buf, mqtt_len);
+        HAL_UART_Transmit_IT(UART_RC, buf, mqtt_len);
 		
         HAL_Delay(1000);
 
@@ -265,7 +264,7 @@ void MQTT_Pub(char *topic, char *payload)
 		
     int mqtt_len = MQTTSerialize_publish(buf, sizeof(buf), 0, 0, 1, 0,
                                          topicString, (unsigned char *)payload, (int)strlen(payload));
-    HAL_UART_Transmit_IT(UART_SIM800, buf, mqtt_len);
+    HAL_UART_Transmit_IT(UART_RC, buf, mqtt_len);
 #if FREERTOS == 1
     osDelay(100);
 #else
@@ -348,7 +347,7 @@ void MQTT_PingReq(void)
     unsigned char buf[16] = {0};
 
     int mqtt_len = MQTTSerialize_pingreq(buf, sizeof(buf));
-    HAL_UART_Transmit_IT(UART_SIM800, buf, mqtt_len);
+    HAL_UART_Transmit_IT(UART_RC, buf, mqtt_len);
 }
 
 /**
@@ -365,7 +364,7 @@ void MQTT_Sub(char *topic)
 
     int mqtt_len = MQTTSerialize_subscribe(buf, sizeof(buf), 0, 1, 1,
                                            &topicString, 0);
-    HAL_UART_Transmit_IT(UART_SIM800, buf, mqtt_len);
+    HAL_UART_Transmit_IT(UART_RC, buf, mqtt_len);
 #if FREERTOS == 1
     osDelay(100);
 #else

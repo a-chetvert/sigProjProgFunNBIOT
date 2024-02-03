@@ -33,6 +33,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "tim.h"
 #include "usart.h"
+#include "perefery.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -56,18 +57,10 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 
 
-void check1BatOn(void);
-void check1BatOff(void);
-void check2BatOn(void);
-void check2BatOff(void);
-void simSupOn(void);
-void simSupOff(void);
-void testPinOn(void);
-void testPinOff(void);
-void apdsPwrOn(void);
-void apdsPwrOff(void);
-void simSupOn(void);
-void simSupOff(void);
+
+
+//void simSupOn(void);
+//void simSupOff(void);
 void sim800Start(void);
 
 //	включение режима Standby
@@ -77,42 +70,30 @@ void sim800Sending(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LED_Pin GPIO_PIN_13
-#define LED_GPIO_Port GPIOC
-#define APDS_SIGNAL_Pin GPIO_PIN_0
+#define BAT_SENS_ADC_IN0_Pin GPIO_PIN_0
+#define BAT_SENS_ADC_IN0_GPIO_Port GPIOA
+#define APDS_SIGNAL_Pin GPIO_PIN_1
 #define APDS_SIGNAL_GPIO_Port GPIOA
-#define BAT2_SENS_ADC_IN1_Pin GPIO_PIN_1
-#define BAT2_SENS_ADC_IN1_GPIO_Port GPIOA
-#define BAT1_SENS_ADC_IN2_Pin GPIO_PIN_2
-#define BAT1_SENS_ADC_IN2_GPIO_Port GPIOA
-#define DCDC_EN_Pin GPIO_PIN_3
-#define DCDC_EN_GPIO_Port GPIOA
-#define BH1750_PWR_Pin GPIO_PIN_5
-#define BH1750_PWR_GPIO_Port GPIOA
-#define BH1750_RESET_Pin GPIO_PIN_6
-#define BH1750_RESET_GPIO_Port GPIOA
-#define MCU_TIM_TIM22_CH2_Pin GPIO_PIN_7
-#define MCU_TIM_TIM22_CH2_GPIO_Port GPIOA
-#define BAT2_CHECK_Pin GPIO_PIN_0
-#define BAT2_CHECK_GPIO_Port GPIOB
-#define MCU_GPIO_Pin GPIO_PIN_1
-#define MCU_GPIO_GPIO_Port GPIOB
+#define MCU_GPIO_Pin GPIO_PIN_5
+#define MCU_GPIO_GPIO_Port GPIOA
 #define APDS_SHDN_Pin GPIO_PIN_2
 #define APDS_SHDN_GPIO_Port GPIOB
-#define BAT1_CHECK_Pin GPIO_PIN_15
-#define BAT1_CHECK_GPIO_Port GPIOB
+#define RC_STATUS_Pin GPIO_PIN_12
+#define RC_STATUS_GPIO_Port GPIOB
+#define RC_CAP_Pin GPIO_PIN_13
+#define RC_CAP_GPIO_Port GPIOB
+#define RC_PWR_Pin GPIO_PIN_14
+#define RC_PWR_GPIO_Port GPIOB
+#define BAT_CHECK_Pin GPIO_PIN_15
+#define BAT_CHECK_GPIO_Port GPIOB
 #define APDS_PWR_Pin GPIO_PIN_8
 #define APDS_PWR_GPIO_Port GPIOA
-#define GSM_CAP_TIM22_CH1_Pin GPIO_PIN_4
-#define GSM_CAP_TIM22_CH1_GPIO_Port GPIOB
-#define GSM_RESET_Pin GPIO_PIN_5
-#define GSM_RESET_GPIO_Port GPIOB
-#define GSM_PWR_Pin GPIO_PIN_6
-#define GSM_PWR_GPIO_Port GPIOB
-#define GSM_STATUS_Pin GPIO_PIN_8
-#define GSM_STATUS_GPIO_Port GPIOB
-#define BAT_DEPASS_Pin GPIO_PIN_9
-#define BAT_DEPASS_GPIO_Port GPIOB
+#define APDS_SHDNA9_Pin GPIO_PIN_9
+#define APDS_SHDNA9_GPIO_Port GPIOA
+#define BACKUP_EN_Pin GPIO_PIN_15
+#define BACKUP_EN_GPIO_Port GPIOA
+#define CHRG_FAULT_Pin GPIO_PIN_3
+#define CHRG_FAULT_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
