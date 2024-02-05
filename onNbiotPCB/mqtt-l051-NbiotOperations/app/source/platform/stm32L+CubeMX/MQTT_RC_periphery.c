@@ -42,10 +42,21 @@ void rcCapOff(void)
 
 void rcTurnOn(void)
 {
-	rcCapOn();
-	HAL_Delay(DELAY_CAP_2_PWR_ON);
+	rcPwrOff();
+	HAL_Delay(2000);
+//	HAL_Delay(DELAY_CAP_2_PWR_ON);
 	rcPwrOn();
 	HAL_Delay(DELAY_PWR_ON_2_PWR_OFF);
 	rcPwrOff();
+	
 }
+
+void rcTurnOff(void){
+	
+
+	rcPwrOn();
+	HAL_Delay(1000);
+	rcPwrOff();
+	
+} 
 

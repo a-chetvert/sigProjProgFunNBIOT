@@ -53,7 +53,7 @@
 /**
   * @brief  Delay between rc Pwr On and rc Pwr Off
   */
-#define DELAY_PWR_ON_2_PWR_OFF   1000
+#define DELAY_PWR_ON_2_PWR_OFF   800
 
 void rcPwrOn(void);
 void rcPwrOff(void);
@@ -61,7 +61,7 @@ void rcCapOn(void);
 void rcCapOff(void);
 
 void rcTurnOn(void);	 
-
+void rcTurnOff(void);	 
  /**
   * @}
   */	

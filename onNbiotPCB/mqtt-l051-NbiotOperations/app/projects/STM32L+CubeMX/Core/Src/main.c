@@ -324,6 +324,8 @@ void startCapGsm(void)
 
 void sim800Sending(void)
 {
+	rcCapOn();
+	HAL_Delay(5000);	
 	rcTurnOn();
 
 	char str[62] = {0};
@@ -339,10 +341,13 @@ void sim800Sending(void)
 	
 	SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(10000);			
+	
+	
+	
 	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(1000);				
 	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"iot\"\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(100);			
+	HAL_Delay(1000);			
 	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(1000);	
 	SIM800_SendCommand("AT+CREVHEX=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
@@ -358,7 +363,9 @@ void sim800Sending(void)
 	SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(500);		
 	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);	
+	HAL_Delay(1000);
+	SIM800_SendCommand("AT+CBAND=?\r\n", "OK\r\n", CMD_DELAY);
+	HAL_Delay(1000);		
 	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"cmnbiot\"\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(1000);
 	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
@@ -422,8 +429,11 @@ void sim800Sending(void)
 		
 	SIM800_SendCommand("AT+CMQDISCON=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(1000);	
+//	SIM800_SendCommand("AT+CPOWD=1=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+//	HAL_Delay(5000);	
+	rcTurnOff();
 	rcCapOff();
-	HAL_Delay(5000);		
+	HAL_Delay(15000);		
 	
 	
 	
