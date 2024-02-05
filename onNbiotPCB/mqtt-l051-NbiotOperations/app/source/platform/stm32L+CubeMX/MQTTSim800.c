@@ -134,7 +134,7 @@ void clearMqttBuffer(void)
 }
 
 /**
- * Send AT command to SIM800 over UART.
+ * Send AT command to RC over UART.
  * @param command the command to be used the send AT command
  * @param reply to be used to set the correct answer to the command
  * @param delay to be used to the set pause to the reply
@@ -195,10 +195,14 @@ int MQTT_Init(void)
     SIM800.mqttServer.connect = 0;
     int error = 0;
     char str[62] = {0};
-    HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
+
+		//delay before start
+		HAL_Delay(20000);	
+		// зачем это?
+//		RcUartFstRecieve(&rx_data);
 		
- //   SIM800_SendCommand("AT\r\n", "OK\r\n", 1000);
-   
+		
+   /*
     error += SIM800_SendCommand("AT+CIPSHUT\r\n", "SHUT OK\r\n", CMD_DELAY);
     error += SIM800_SendCommand("AT+CGATT=1\r\n", "OK\r\n", CMD_DELAY);
     error += SIM800_SendCommand("AT+CIPMODE=1\r\n", "OK\r\n", CMD_DELAY);
@@ -211,7 +215,7 @@ int MQTT_Init(void)
 		HAL_Delay(1200);
     SIM800_SendCommand("AT+CIFSR\r\n", "", CMD_DELAY);
 		HAL_Delay(1200);		
-		MQTT_Connect();
+		MQTT_Connect();*/
 		return 1;
 }
 

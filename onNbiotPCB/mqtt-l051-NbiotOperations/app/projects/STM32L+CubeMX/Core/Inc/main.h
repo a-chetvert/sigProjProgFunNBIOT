@@ -34,6 +34,8 @@ extern "C" {
 #include "tim.h"
 #include "usart.h"
 #include "perefery.h"
+
+#include "MQTT_RC_periphery.h"	
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

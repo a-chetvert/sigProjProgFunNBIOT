@@ -2,6 +2,9 @@
 #define PEREFERY_H_
 //------------------------------------------------
 #include "main.h"
+#include "MQTT_RC_periphery.h"
+
+
 //#include "lcd.h"
 //#include "button.h"
 
@@ -12,7 +15,6 @@
 //  MENU_STATE_MAIN,
 //}MENU_StateTypeDef;
 
-#define UART_RC &hlpuart1
 
 void checkBatOn(void);
 void checkBatOff(void);
@@ -24,11 +26,6 @@ void apdsPwrOn(void);
 void apdsPwrOff(void);
 void apdsShdnOn(void);
 void apdsShdnOff(void);
-void rcPwrOn(void);
-void rcPwrOff(void);
-void rcCapOn(void);
-void rcCapOff(void);
-
 
 //typedef enum {
 //  MAIN_MENU_STATE_IDLE = 0,

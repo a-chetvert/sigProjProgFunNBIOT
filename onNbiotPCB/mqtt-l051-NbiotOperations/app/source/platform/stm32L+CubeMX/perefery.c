@@ -1,5 +1,4 @@
 #include "perefery.h"
-//#include "stm32l1xx_hal.h"
 
 void checkBatOn(void)
 {
@@ -51,23 +50,4 @@ void apdsShdnOff(void)
 	HAL_GPIO_WritePin(APDS_SHDN_GPIO_Port, APDS_SHDN_Pin, GPIO_PIN_SET);
 }
 
-void rcPwrOn(void)
-{
-	HAL_GPIO_WritePin(RC_PWR_GPIO_Port, RC_PWR_Pin, GPIO_PIN_SET);
-}
 
-void rcPwrOff(void)
-{
-	HAL_GPIO_WritePin(RC_PWR_GPIO_Port, RC_PWR_Pin, GPIO_PIN_RESET);
-}
-
-
-void rcCapOn(void)
-{
-	HAL_GPIO_WritePin(RC_CAP_GPIO_Port, RC_CAP_Pin, GPIO_PIN_SET);
-}
-
-void rcCapOff(void)
-{
-	HAL_GPIO_WritePin(RC_CAP_GPIO_Port, RC_CAP_Pin, GPIO_PIN_RESET);
-}
