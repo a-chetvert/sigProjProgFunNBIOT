@@ -380,65 +380,65 @@ void sim800Sending(void)
 	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(1000);	
 	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"cmnbiot\"\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);
+	HAL_Delay(900);
 	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(1000);	
 	SIM800_SendCommand("AT+CGREG?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(500);			
 	SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 
-	HAL_Delay(3500);
+	HAL_Delay(1300);
 	
 	SIM800_SendCommand("AT+CMQTSYNC=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(300);		
 
 	SIM800_SendCommand("AT+CMQNEW=""dev.rightech.io"",\"1883\",12000,1024\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1500);		
+	HAL_Delay(1300);		
 
 	SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-3he0ww21\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);		
+	HAL_Delay(800);		
 
 	SIM800_SendCommand("AT+CMQSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);
+	HAL_Delay(800);
 	SIM800_SendCommand("AT+CMQPUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0,0,0,4,\"1025\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	
 	SIM800_SendCommand("AT+CMQSUB=0,\"trapdoor\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);
+	HAL_Delay(800);
 	SIM800_SendCommand("AT+CMQPUB=0,\"trapdoor\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"trapdoor\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	
 	SIM800_SendCommand("AT+CMQSUB=0,\"somehouropen\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);
+	HAL_Delay(800);
 	SIM800_SendCommand("AT+CMQPUB=0,\"somehouropen\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"somehouropen\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	
 	SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);
+	HAL_Delay(800);
 	SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);		
+	HAL_Delay(800);		
 	
 	SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);
+	HAL_Delay(800);
 	SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);		
+	HAL_Delay(800);		
 	
 	SIM800_SendCommand("AT+CMQSUB=0,\"vCell\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);
+	HAL_Delay(800);
 	SIM800_SendCommand("AT+CMQPUB=0,\"vCell\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"vCell\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
+	HAL_Delay(800);	
 		
 		
 		
