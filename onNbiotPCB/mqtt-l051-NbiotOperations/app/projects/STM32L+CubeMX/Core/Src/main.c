@@ -325,14 +325,15 @@ void startCapGsm(void)
 void sim800Sending(void)
 {
 	rcCapOn();
-	HAL_Delay(5000);	
+	
 	rcTurnOn();
-
+	HAL_Delay(5000);	
+	
 	char str[62] = {0};
 	char str_[128] = {0};
 
 	
-	HAL_Delay(20000);		
+	HAL_Delay(12000);		
 	
 	MX_LPUART1_UART_Init();
 //	RcUartInit();
@@ -343,15 +344,29 @@ void sim800Sending(void)
 	HAL_Delay(10000);			
 	
 	
-	
+	//	Set phone functionality
 	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);				
+	HAL_Delay(1800);			
+	//	Set Default PSD Connection Settings
 	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"iot\"\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);			
+	HAL_Delay(100);
 	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);	
+	HAL_Delay(1500);	
+	
+	
+//	//Get mobile operation band
+//	SIM800_SendCommand("AT+CBAND=?\r\n", "OK\r\n", CMD_DELAY);
+//	HAL_Delay(1000);			
+
+	//Get mobile operation band
+	SIM800_SendCommand("AT+CBAND=3,8,20\r\n", "OK\r\n", CMD_DELAY);
+	HAL_Delay(300);			
+
+	//	Control the Data Output Format
 	SIM800_SendCommand("AT+CREVHEX=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(300);				
+	HAL_Delay(300);		
+// тест досюда провел		
+
 	SIM800_SendCommand("AT+CSQ\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(500);	
 	SIM800_SendCommand("AT+CGREG?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
@@ -363,9 +378,7 @@ void sim800Sending(void)
 	SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(500);		
 	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);
-	SIM800_SendCommand("AT+CBAND=?\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);		
+	HAL_Delay(1000);	
 	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"cmnbiot\"\r\n", "OK\r\n", CMD_DELAY);
 	HAL_Delay(1000);
 	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
@@ -427,11 +440,17 @@ void sim800Sending(void)
 	SIM800_SendCommand("AT+CMQUNSUB=0,\"vCell\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 	HAL_Delay(1000);	
 		
+		
+		
+	//	Disconnect MQTT	
 	SIM800_SendCommand("AT+CMQDISCON=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1000);	
-//	SIM800_SendCommand("AT+CPOWD=1=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-//	HAL_Delay(5000);	
-	rcTurnOff();
+	HAL_Delay(900);	
+
+// заменить значение на 0
+// срочное выключение
+	SIM800_SendCommand("AT+CPOWD=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+	HAL_Delay(5000);	
+//	rcTurnOff();
 	rcCapOff();
 	HAL_Delay(15000);		
 	
