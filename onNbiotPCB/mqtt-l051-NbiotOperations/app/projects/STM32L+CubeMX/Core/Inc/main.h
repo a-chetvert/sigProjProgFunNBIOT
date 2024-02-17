@@ -34,13 +34,15 @@ extern "C" {
 #include "tim.h"
 #include "usart.h"
 #include "perefery.h"
-
 #include "MQTT_RC_periphery.h"	
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+//	Инициализация для работы с GSM
+//SIM800_t SIM800;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -59,15 +61,8 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 
 
-
-
-//void simSupOn(void);
-//void simSupOff(void);
-void sim800Start(void);
-
 //	включение режима Standby
 void standbyStart(void);
-void sim800Sending(void);
 
 /* USER CODE END EFP */
 

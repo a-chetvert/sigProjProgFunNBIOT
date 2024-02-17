@@ -3,6 +3,21 @@
 //------------------------------------------------
 #include "main.h"
 #include "MQTT_RC_periphery.h"
+#include "config_che.c"
+#include "string.h"
+#include <stdio.h>
+
+#include "usart.h"
+#include "adc.h"
+#include "rtc.h"
+
+
+
+
+
+
+#define STANDBY_START 5
+
 
 
 //#include "lcd.h"
@@ -26,6 +41,9 @@ void apdsPwrOn(void);
 void apdsPwrOff(void);
 void apdsShdnOn(void);
 void apdsShdnOff(void);
+
+void adcWork(void);
+
 
 //typedef enum {
 //  MAIN_MENU_STATE_IDLE = 0,

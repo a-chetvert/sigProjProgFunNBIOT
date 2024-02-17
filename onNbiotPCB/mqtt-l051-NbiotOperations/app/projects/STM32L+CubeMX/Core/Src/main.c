@@ -30,6 +30,7 @@
 #include <stdio.h>
 
 #include "MQTTSim800.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,27 +41,19 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define STANDBY_START 5
 
-#define TEST_BKP 2
-#define TEST_ADC 0
-#define PRODUCTION 1
-
-//#define STYLE TEST
-#define STYLE PRODUCTION
-
-
-#define FIRST 0
-#define nFIRST 1
-
-//#define STYLE TEST
-#define STYLE_BKP nFIRST
 
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart1) 
+{
+    if (&hlpuart1 == UART_RC) 
+		{
+        Sim800_RxCallBack();
+    }
+}
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -68,39 +61,7 @@
 /* USER CODE BEGIN PV */
 
 //	Инициализация для работы с GSM
-SIM800_t SIM800;
-
-
-
-//	порог срабатывания, в схеме DRAWIO указан, как ValueWarning 
-#define POROG 50
-
-//	???
-#define CLK_MIN 3
-
-//	состояния люка
-#define TRAPDOOR_OPEN 1
-#define TRAPDOOR_CLOSE 0
-
-//	флаг для работы ADC
-volatile uint8_t flagADC = 0;
-//	флаг для хранения предыдущего состояния ADC
-volatile uint8_t flagPrevADC = 0;
-
-//	состояние люка
-uint32_t stateTrapdoor = 0;  
-
-//	вскрытия за последние M часов
-uint32_t someTimeOpen = 0;
-
-// условное время с момента старта мк
-uint32_t timeNow = 0;
-
-//	массив для отладки
-char trans_str[64] = {0,};
-
-//	временный массив для съема данных с АЦП
-volatile uint16_t adc[4] = {0,};
+//SIM800_t SIM800;
 
 
 //	что то для отладки
@@ -145,21 +106,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart1) 
-{
-    if (&hlpuart1 == UART_RC) 
-		{
-        Sim800_RxCallBack();
-    }
-}
-
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-   flagADC = 1;
-}
-
-
 
 /* USER CODE END 0 */
 
@@ -170,16 +116,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	
-	SIM800.sim.apn = "internet";
-	SIM800.sim.apn_user = "";
-	SIM800.sim.apn_pass = "";
-	SIM800.mqttServer.host = "dev.rightech.io";
-	SIM800.mqttServer.port = 1883;
-	SIM800.mqttClient.username = "krsn";
-	SIM800.mqttClient.pass = "pw275PG668";
-	SIM800.mqttClient.clientID = "3he0ww21";
-	SIM800.mqttClient.keepAliveInterval = 20;		
 	
   /* USER CODE END 1 */
 
@@ -207,11 +143,6 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-
-
-
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -220,11 +151,20 @@ int main(void)
   while (1)
   {
 		
+		#if ((STYLE == PRODUCTION)||(STYLE == TEST_ALL)||(STYLE == TEST_LIGHT_SENS))
+			HAL_Delay(100);
+			adcWork();
+			HAL_Delay(100);
+		#endif		
 
-		sim800Sending();
+		
+		#if ((STYLE == PRODUCTION)||(STYLE == TEST_ALL)||(STYLE == TEST_RC))
+			rcSending();
+		#endif		
 
-		HAL_Delay(5000);
-		//	включение режима Standby
+		HAL_Delay(50);
+		
+	//	включение режима Standby
 	//	standbyStart();
 
     /* USER CODE END WHILE */
@@ -292,187 +232,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void standbyStart(void)
-{
-		__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
-		__HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
-		HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, STANDBY_START, RTC_WAKEUPCLOCK_CK_SPRE_16BITS);
-		HAL_PWR_EnterSTANDBYMode();
-}
-
-void startCapGsm(void)
-{	
-	//	включаем питание
-//	simSupOn();
-	//	инициализация таймера
-	HAL_Delay(10);
-
-	MX_TIM22_Init();
-	//	выставление скважности		
-	__HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_1, 12);
-	//	стартуем шим
-	HAL_TIM_PWM_Start(&htim22, TIM_CHANNEL_1);
-	HAL_Delay(15);
-	__HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_1, 9);
-	HAL_Delay(15);	
-	__HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_1, 4);
-	HAL_Delay(40);
-	__HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_1, 99);
-	HAL_Delay(10);
-}
-
-void sim800Sending(void)
-{
-	rcCapOn();
-	
-	rcTurnOn();
-	HAL_Delay(5000);	
-	
-	char str[62] = {0};
-	char str_[128] = {0};
-
-	
-	HAL_Delay(12000);		
-	
-	MX_LPUART1_UART_Init();
-//	RcUartInit();
-//	MQTT_Init();	
-	HAL_Delay(100);	
-	
-	SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(10000);			
-	
-	
-	//	Set phone functionality
-	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1800);			
-	//	Set Default PSD Connection Settings
-	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"iot\"\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(100);
-	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1500);	
-	
-	
-//	//Get mobile operation band
-//	SIM800_SendCommand("AT+CBAND=?\r\n", "OK\r\n", CMD_DELAY);
-//	HAL_Delay(1000);			
-
-	//Get mobile operation band
-	SIM800_SendCommand("AT+CBAND=3,8,20\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(300);			
-
-	//	Control the Data Output Format
-	SIM800_SendCommand("AT+CREVHEX=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(300);		
-// тест досюда провел		
-
-	SIM800_SendCommand("AT+CSQ\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(500);	
-	SIM800_SendCommand("AT+CGREG?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(500);			
-	SIM800_SendCommand("AT+CGACT?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(500);			
-	SIM800_SendCommand("AT+COPS?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(500);	
-	SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(500);		
-	SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);	
-	SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"cmnbiot\"\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(900);
-	SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", CMD_DELAY);
-	HAL_Delay(1000);	
-	SIM800_SendCommand("AT+CGREG?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(500);			
-	SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-
-	HAL_Delay(1300);
-	
-	SIM800_SendCommand("AT+CMQTSYNC=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(300);		
-
-	SIM800_SendCommand("AT+CMQNEW=""dev.rightech.io"",\"1883\",12000,1024\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(1300);		
-
-	SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-3he0ww21\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);		
-
-	SIM800_SendCommand("AT+CMQSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);
-	SIM800_SendCommand("AT+CMQPUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0,0,0,4,\"1025\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	SIM800_SendCommand("AT+CMQUNSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	
-	SIM800_SendCommand("AT+CMQSUB=0,\"trapdoor\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);
-	SIM800_SendCommand("AT+CMQPUB=0,\"trapdoor\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	SIM800_SendCommand("AT+CMQUNSUB=0,\"trapdoor\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	
-	SIM800_SendCommand("AT+CMQSUB=0,\"somehouropen\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);
-	SIM800_SendCommand("AT+CMQPUB=0,\"somehouropen\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	SIM800_SendCommand("AT+CMQUNSUB=0,\"somehouropen\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	
-	SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);
-	SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);		
-	
-	SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);
-	SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);		
-	
-	SIM800_SendCommand("AT+CMQSUB=0,\"vCell\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);
-	SIM800_SendCommand("AT+CMQPUB=0,\"vCell\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-	SIM800_SendCommand("AT+CMQUNSUB=0,\"vCell\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(800);	
-		
-		
-		
-	//	Disconnect MQTT	
-	SIM800_SendCommand("AT+CMQDISCON=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(900);	
-
-// заменить значение на 0
-// срочное выключение
-	SIM800_SendCommand("AT+CPOWD=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(5000);	
-//	rcTurnOff();
-	rcCapOff();
-	HAL_Delay(15000);		
-	
-	
-	
-/*
-	
-
-	testPinOn();
-
-// HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-	
-// HAL_RTCEx_SetWakeUpTimer(&hrtc);
-
-	HAL_Delay(4000);
-	simSupOff();
-	testPinOff();
-	*/
-}
-
-
-
 
 /* USER CODE END 4 */
 

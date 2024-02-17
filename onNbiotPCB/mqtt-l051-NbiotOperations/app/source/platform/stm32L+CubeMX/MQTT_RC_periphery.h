@@ -15,6 +15,11 @@
 #include <string.h>
 #include "stm32l0xx_hal.h"
 
+//#include "MQTTSim800.h"
+//	Инициализация для работы с GSM
+
+
+//#include "MQTTSim800.h"
 
 /** @defgroup Selecting configuration options
   * @{
@@ -87,6 +92,11 @@ void RcUartInit(void);
 	*/
 void RcUartFstRecieve(uint8_t* tmpRxData);	
 
+
+/**	
+  * @brief    Sending data via RC module
+	*/
+void rcSending(void);
 	
  /**
   * @}

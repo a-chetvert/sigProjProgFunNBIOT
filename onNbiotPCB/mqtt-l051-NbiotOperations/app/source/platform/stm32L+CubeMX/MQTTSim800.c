@@ -37,8 +37,8 @@
 
 #include "MQTTSim800.h"
 
-
-extern SIM800_t SIM800;
+//	Инициализация для работы с GSM
+SIM800_t SIM800;
 //#ifndef
 #define UART_RC &hlpuart1
 //#endif
