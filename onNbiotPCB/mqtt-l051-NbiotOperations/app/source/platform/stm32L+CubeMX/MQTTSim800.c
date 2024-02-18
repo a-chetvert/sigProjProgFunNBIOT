@@ -44,6 +44,7 @@ SIM800_t SIM800;
 //#endif
 
 uint8_t rx_data = 0;
+// буффер для приема
 uint8_t rx_buffer[1460] = {0};
 uint16_t rx_index = 0;
 
@@ -142,6 +143,8 @@ void clearMqttBuffer(void)
  */
 int SIM800_SendCommand(char *command, char *reply, uint16_t delay)
 {
+		// выполняем отправку сообщения 
+		// проверь здесь тайминг! 	
     HAL_UART_Transmit_IT(UART_RC, (unsigned char *)command,
                          (uint16_t)strlen(command));
 
@@ -196,13 +199,42 @@ int MQTT_Init(void)
     int error = 0;
     char str[62] = {0};
 
-		//delay before start
-		HAL_Delay(20000);	
+		// не понимаю зачем нужен этот прием
+		HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
+		
+    SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);		
+		// отключение эхо
+		SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
+		
+		
+		
+//		if(error)
+//		{
+//			SIM800_SendCommand("ERRRRRRR\r\n", "OK\r\n", CMD_DELAY);
+//		}
+		
+		
+	//	Checking SIM card
+		for (char i=0; i<3; i++ )
+		{
+			error += SIM800_SendCommand("AT+CPIN?\r\n", "READY\r\n", CMD_DELAY);
+			
+			if(error == 0)
+			{
+				break;
+			}
+			HAL_Delay(CMD_DELAY);		
+		}
+		
+	
+//  delay before start
+//	HAL_Delay(20000);	
+		
 		// зачем это?
 //		RcUartFstRecieve(&rx_data);
 		
 		
-   /*
+		/*
     error += SIM800_SendCommand("AT+CIPSHUT\r\n", "SHUT OK\r\n", CMD_DELAY);
     error += SIM800_SendCommand("AT+CGATT=1\r\n", "OK\r\n", CMD_DELAY);
     error += SIM800_SendCommand("AT+CIPMODE=1\r\n", "OK\r\n", CMD_DELAY);
@@ -215,7 +247,8 @@ int MQTT_Init(void)
 		HAL_Delay(1200);
     SIM800_SendCommand("AT+CIFSR\r\n", "", CMD_DELAY);
 		HAL_Delay(1200);		
-		MQTT_Connect();*/
+		*/
+		MQTT_Connect();
 		return 1;
 }
 
@@ -229,7 +262,10 @@ void MQTT_Connect(void)
     SIM800.mqttReceive.newEvent = 0;
     SIM800.mqttServer.connect = 0;
     char str[128] = {0};
+		
     unsigned char buf[128] = {0};
+		
+		
     sprintf(str, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n", SIM800.mqttServer.host, SIM800.mqttServer.port);
     SIM800_SendCommand(str, "OK\r\n", CMD_DELAY);
 		

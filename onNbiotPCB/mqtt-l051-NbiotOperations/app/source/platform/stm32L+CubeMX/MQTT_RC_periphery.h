@@ -38,7 +38,7 @@
 /**
   * @brief  Delay between commands
   */
-#define CMD_DELAY   10
+#define CMD_DELAY   40
 
 /**
  * @}
