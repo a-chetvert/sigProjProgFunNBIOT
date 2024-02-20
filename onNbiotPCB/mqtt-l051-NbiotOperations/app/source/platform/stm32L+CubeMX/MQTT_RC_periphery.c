@@ -196,7 +196,9 @@ void rcSending(void)
 //	HAL_Delay(5000);	
 //	rcTurnOff();
 	rcCapOff();
-	HAL_Delay(15000);		
+	
+	HAL_Delay(5000);		
+	//HAL_Delay(15000);		
 	           
 	
 	

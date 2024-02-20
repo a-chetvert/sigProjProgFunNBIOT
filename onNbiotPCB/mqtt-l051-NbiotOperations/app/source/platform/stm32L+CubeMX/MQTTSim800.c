@@ -44,6 +44,7 @@ SIM800_t SIM800;
 //#endif
 
 uint8_t rx_data = 0;
+
 // буффер для приема
 uint8_t rx_buffer[1460] = {0};
 uint16_t rx_index = 0;
@@ -61,6 +62,7 @@ void Sim800_RxCallBack(void)
 {
     rx_buffer[rx_index++] = rx_data;
 
+		
     if (SIM800.mqttServer.connect == 0)
     {
         if (strstr((char *)rx_buffer, "\r\n") != NULL && rx_index == 2)
@@ -81,6 +83,8 @@ void Sim800_RxCallBack(void)
             }
         }
     }
+		
+
     if (strstr((char *)rx_buffer, "CLOSED\r\n") || strstr((char *)rx_buffer, "ERROR\r\n") || strstr((char *)rx_buffer, "DEACT\r\n"))
     {
         SIM800.mqttServer.connect = 0;
@@ -89,6 +93,7 @@ void Sim800_RxCallBack(void)
     {
         mqtt_receive = 1;
     }
+
     if (mqtt_receive == 1)
     {
         mqtt_buffer[mqtt_index++] = rx_data;
@@ -108,6 +113,8 @@ void Sim800_RxCallBack(void)
         clearRxBuffer();
         clearMqttBuffer();
     }
+		
+		
     HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
 }
 
@@ -148,12 +155,15 @@ int SIM800_SendCommand(char *command, char *reply, uint16_t delay)
     HAL_UART_Transmit_IT(UART_RC, (unsigned char *)command,
                          (uint16_t)strlen(command));
 
+		
 #if FREERTOS == 1
     osDelay(delay);
 #else
     HAL_Delay(delay);
 #endif
 
+
+		//	если в буффере есть ответ (reply)
     if (strstr(mqtt_buffer, reply) != NULL)
     {
         clearRxBuffer();
@@ -196,13 +206,38 @@ int SIM800_SendCommand(char *command, char *reply, uint16_t delay)
 int MQTT_Init(void)
 {
     SIM800.mqttServer.connect = 0;
-    int error = 0;
-    char str[62] = {0};
+    int error_l = 0;
+		char str[62] = {0};
 
 		// не понимаю зачем нужен этот прием
 		HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
+
+		SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
+    SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
+
+
+
 		
-    SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);		
+		
+    
+		for (char i=0; i<3; i++ )
+		{
+			error_l = SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
+			HAL_Delay(CMD_DELAY);		
+			if(error_l == 0)
+			{
+				break;
+			}
+			
+		}
+		
+		return 1;		
+		SIM800_SendCommand((char*)&error_l, "OK\r\n", CMD_DELAY);
+		
+		
+		
+		
+		
 		// отключение эхо
 		SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
 		
@@ -217,15 +252,15 @@ int MQTT_Init(void)
 	//	Checking SIM card
 		for (char i=0; i<3; i++ )
 		{
-			error += SIM800_SendCommand("AT+CPIN?\r\n", "READY\r\n", CMD_DELAY);
+			error_l = SIM800_SendCommand("AT+CPIN?\r\n", "READY", 100/*CMD_DELAY*/);
 			
-			if(error == 0)
+			if(error_l == 0)
 			{
 				break;
 			}
 			HAL_Delay(CMD_DELAY);		
 		}
-		
+		return 1;
 	
 //  delay before start
 //	HAL_Delay(20000);	

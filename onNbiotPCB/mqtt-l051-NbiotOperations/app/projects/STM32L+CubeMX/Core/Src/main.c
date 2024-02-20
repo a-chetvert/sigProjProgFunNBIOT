@@ -47,9 +47,9 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart1) 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-    if (&hlpuart1 == UART_RC) 
+    if (huart == UART_RC) 
 		{
         Sim800_RxCallBack();
     }
@@ -142,7 +142,7 @@ int main(void)
   MX_ADC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+	//__HAL_UART_ENABLE_IT(&hlpuart1,UART_IT_RXNE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
