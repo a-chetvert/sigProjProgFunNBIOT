@@ -213,8 +213,7 @@ int MQTT_Init(void)
 		HAL_UART_Receive_IT(UART_RC, &rx_data, 1);
 
 		SIM800_SendCommand("AT\r\n", "OK\r\n", CMD_DELAY);
-    SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
-
+		HAL_Delay(15000);		
 
 
 		
@@ -231,35 +230,58 @@ int MQTT_Init(void)
 			
 		}
 		
-		return 1;		
-		SIM800_SendCommand((char*)&error_l, "OK\r\n", CMD_DELAY);
-		
-		
-		
-		
-		
+
 		// отключение эхо
-		SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
+    SIM800_SendCommand("ATE0\r\n", "OK\r\n", CMD_DELAY);
 		
 		
 		
-//		if(error)
-//		{
-//			SIM800_SendCommand("ERRRRRRR\r\n", "OK\r\n", CMD_DELAY);
-//		}
+		char localCnt = 1;
 		
-		
-	//	Checking SIM card
-		for (char i=0; i<3; i++ )
-		{
-			error_l = SIM800_SendCommand("AT+CPIN?\r\n", "READY", 100/*CMD_DELAY*/);
-			
-			if(error_l == 0)
+		while(localCnt)
+		{	
+			//	Checking SIM card
+			for (char i=0; i<3; i++ )
 			{
-				break;
+				error_l = SIM800_SendCommand("AT+CPIN?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				
+				if(error_l == 0)
+				{
+					break;
+				}
+				HAL_Delay(CMD_DELAY);		
 			}
-			HAL_Delay(CMD_DELAY);		
+			
+			// задефайнить
+			// если симку не определяет, то сделать так:
+			// проверь работу этого алгоритма
+
+			if(error_l == 1)
+			{
+				SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				HAL_Delay(5000);		
+				SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				continue;
+			}
+			//если ошибок нет
+			else if(error_l == 0)
+			{
+				localCnt = 0;
+			}
 		}
+		
+		
+		
+		
+// заменить значение на 0
+// срочное выключение
+	SIM800_SendCommand("AT+CPOWD=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+	HAL_Delay(5000);	
+	rcTurnOff();		
+		
+		
+		
+		
 		return 1;
 	
 //  delay before start
