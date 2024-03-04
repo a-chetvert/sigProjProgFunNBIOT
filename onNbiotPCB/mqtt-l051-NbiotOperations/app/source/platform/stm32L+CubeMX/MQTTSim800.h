@@ -108,3 +108,9 @@ void MQTT_PingReq(void);
 void MQTT_Sub(char *topic);
 
 void MQTT_Receive(unsigned char *buf);
+
+/**	
+  * @brief    Sending data via RC module
+	*/
+void rcSending(void);
+	

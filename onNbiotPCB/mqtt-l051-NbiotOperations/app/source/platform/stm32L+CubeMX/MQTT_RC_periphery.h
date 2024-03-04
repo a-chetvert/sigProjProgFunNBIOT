@@ -93,11 +93,7 @@ void RcUartInit(void);
 void RcUartFstRecieve(uint8_t* tmpRxData);	
 
 
-/**	
-  * @brief    Sending data via RC module
-	*/
-void rcSending(void);
-	
+
  /**
   * @}
   */	

@@ -39,6 +39,8 @@
 
 //	Инициализация для работы с GSM
 SIM800_t SIM800;
+
+
 //#ifndef
 #define UART_RC &hlpuart1
 //#endif
@@ -205,6 +207,16 @@ int SIM800_SendCommand(char *command, char *reply, uint16_t delay)
 
 int MQTT_Init(void)
 {
+		SIM800.sim.apn = "internet";
+		SIM800.sim.apn_user = "";
+		SIM800.sim.apn_pass = "";
+		SIM800.mqttServer.host = "dev.rightech.io";
+		SIM800.mqttServer.port = 1883;
+		SIM800.mqttClient.username = "krsn";
+		SIM800.mqttClient.pass = "pw275PG668";
+		SIM800.mqttClient.clientID = "3he0ww21";
+		SIM800.mqttClient.keepAliveInterval = 20;		
+	
     SIM800.mqttServer.connect = 0;
     int error_l = 0;
 		char str[62] = {0};
@@ -239,7 +251,7 @@ int MQTT_Init(void)
 		char localCnt = 1;
 		
 		while(localCnt)
-		{	
+		{
 			//	Checking SIM card
 			for (char i=0; i<3; i++ )
 			{
@@ -270,44 +282,137 @@ int MQTT_Init(void)
 			}
 		}
 		
+		SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"iot\"\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(100);				
+		SIM800_SendCommand("AT+CREVHEX=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(300);				
 		
+		localCnt = 1;
 		
-		
-// заменить значение на 0
-// срочное выключение
-	SIM800_SendCommand("AT+CPOWD=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-	HAL_Delay(5000);	
-	rcTurnOff();		
-		
-		
-		
-		
-		return 1;
-	
-//  delay before start
-//	HAL_Delay(20000);	
-		
-		// зачем это?
-//		RcUartFstRecieve(&rx_data);
-		
-		
-		/*
-    error += SIM800_SendCommand("AT+CIPSHUT\r\n", "SHUT OK\r\n", CMD_DELAY);
-    error += SIM800_SendCommand("AT+CGATT=1\r\n", "OK\r\n", CMD_DELAY);
-    error += SIM800_SendCommand("AT+CIPMODE=1\r\n", "OK\r\n", CMD_DELAY);
-		HAL_Delay(120);	
-    snprintf(str, sizeof(str), "AT+CSTT=\"%s\",\"%s\",\"%s\"\r\n", SIM800.sim.apn, SIM800.sim.apn_user,
-             SIM800.sim.apn_pass);
-    error += SIM800_SendCommand(str, "OK\r\n", CMD_DELAY);
+		while(localCnt)
+		{
+			//	Checking SIM card
+			for (char i=0; i<3; i++ )
+			{
+				//Set mobile operation band
+				error_l = SIM800_SendCommand("AT+CBAND=3,8,20\r\n", "OK\r\n", CMD_DELAY);
+				
+				if(error_l == 0)
+				{
+					break;
+				}
+				HAL_Delay(CMD_DELAY);		
+			}
+			
+			// задефайнить
+			// если симку не определяет, то сделать так:
+			// проверь работу этого алгоритма
 
-    error += SIM800_SendCommand("AT+CIICR\r\n", "OK\r\n", CMD_DELAY);
-		HAL_Delay(1200);
-    SIM800_SendCommand("AT+CIFSR\r\n", "", CMD_DELAY);
-		HAL_Delay(1200);		
-		*/
-		MQTT_Connect();
-		return 1;
+			if(error_l == 1)
+			{
+				SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				HAL_Delay(5000);		
+				SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				continue;
+			}
+			//если ошибок нет
+			else if(error_l == 0)
+			{
+				localCnt = 0;
+			}
+		}		
+		
+		
+		
+		
+		localCnt = 1;
+		
+		while(localCnt)
+		{
+			//	Checking SIM card
+			for (char i=0; i<3; i++ )
+			{
+				error_l = SIM800_SendCommand("AT+CSQ\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				
+				if(error_l == 0)
+				{
+					break;
+				}
+				HAL_Delay(CMD_DELAY);		
+			}
+			
+			// задефайнить
+			// если симку не определяет, то сделать так:
+			// проверь работу этого алгоритма
+
+			if(error_l == 1)
+			{
+				SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				HAL_Delay(5000);		
+				SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				continue;
+			}
+			//если ошибок нет
+			else if(error_l == 0)
+			{
+				localCnt = 0;
+			}
+		}		
+		
+		localCnt = 3;
+		while(localCnt--)
+		{
+			//	Checking SIM card
+			for (char i=0; i<3; i++ )
+			{
+				error_l = SIM800_SendCommand("AT+CGREG?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+			
+				if(error_l == 0)
+				{
+					break;
+				}
+				HAL_Delay(CMD_DELAY);		
+			}
+			
+			// задефайнить
+			// если симку не определяет, то сделать так:
+			// проверь работу этого алгоритма
+
+			if(error_l == 1)
+			{
+				//	Set phone functionality
+				SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				HAL_Delay(5000);		
+				//	Set phone functionality
+				SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+				HAL_Delay(10000);
+				continue;
+			}
+			//если ошибок нет
+			else if(error_l == 0)
+			{
+				localCnt = 0;
+			}
+		}		
+
+		//возможно добавить для проверки
+//	SIM800_SendCommand("AT+CGACT\r\n", "OK\r\n", 100/*CMD_DELAY*/);		
+//	SIM800_SendCommand("AT+COPS?\r\n", "OK\r\n", 100/*CMD_DELAY*/);	
+//  SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);		
+		
+
+    if (error_l == 0)
+    {
+        MQTT_Connect();
+        return 0;
+    }
+    else
+    {
+        return error_l;
+    }
 }
+
+uint32_t clk=1001;
 
 /**
  * Connect to MQTT server in Internet over TCP.
@@ -316,30 +421,74 @@ int MQTT_Init(void)
  */
 void MQTT_Connect(void)
 {
-    SIM800.mqttReceive.newEvent = 0;
-    SIM800.mqttServer.connect = 0;
     char str[128] = {0};
-		
-    unsigned char buf[128] = {0};
-		
-		
-    sprintf(str, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n", SIM800.mqttServer.host, SIM800.mqttServer.port);
-    SIM800_SendCommand(str, "OK\r\n", CMD_DELAY);
-		
+	
+		SIM800_SendCommand("AT+CMQTSYNC=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(3000);		
 
-    HAL_Delay(1100);
+//		snprintf(str, sizeof(str), "AT+CSTT=\"%s\",\"%s\",\"%s\"\r\n", SIM800.sim.apn, SIM800.sim.apn_user,
+//             SIM800.sim.apn_pass);
+		SIM800_SendCommand("AT+CMQNEW=""dev.rightech.io"",\"1883\",12000,1024\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(1300);			
 
-        MQTTPacket_connectData datas = MQTTPacket_connectData_initializer;
-        datas.username.cstring = SIM800.mqttClient.username;
-        datas.password.cstring = SIM800.mqttClient.pass;
-        datas.clientID.cstring = SIM800.mqttClient.clientID;
-        datas.keepAliveInterval = SIM800.mqttClient.keepAliveInterval;
-        datas.cleansession = 1;
-        int mqtt_len = MQTTSerialize_connect(buf, sizeof(buf), &datas);
-        HAL_UART_Transmit_IT(UART_RC, buf, mqtt_len);
+		SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-3he0ww21\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);		
+		HAL_Delay(3000);	
+			
+		SIM800_SendCommand("AT+CMQSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
 		
-        HAL_Delay(1000);
-
+		
+		sprintf(str , "AT+CMQPUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0,0,0,4,\"%lu\"\r\n", clk++);
+		
+		SIM800_SendCommand(str, "OK\r\n", 100/*CMD_DELAY*/);
+		
+//		SIM800_SendCommand("AT+CMQPUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0,0,0,4,\"1024\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		
+		SIM800_SendCommand("AT+CMQSUB=0,\"trapdoor\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"trapdoor\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"trapdoor\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		
+		SIM800_SendCommand("AT+CMQSUB=0,\"somehouropen\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"somehouropen\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"somehouropen\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		
+		SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);		
+		
+		SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);		
+		
+		SIM800_SendCommand("AT+CMQSUB=0,\"vCell\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"vCell\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"vCell\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+			
+			
+			
+		//	Disconnect MQTT	
+		SIM800_SendCommand("AT+CMQDISCON=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(900);				
+	
 }
 
 /**
@@ -488,4 +637,56 @@ void MQTT_Receive(unsigned char *buf)
     SIM800.mqttReceive.topicLen = receivedTopic.lenstring.len;
     memcpy(SIM800.mqttReceive.payload, payload, SIM800.mqttReceive.payloadLen);
     SIM800.mqttReceive.newEvent = 1;
+}
+
+void rcSending(void)
+{
+		SIM800.sim.apn = "internet";
+		SIM800.sim.apn_user = "";
+		SIM800.sim.apn_pass = "";
+		SIM800.mqttServer.host = "dev.rightech.io";
+		SIM800.mqttServer.port = 1883;
+		SIM800.mqttClient.username = "krsn";
+		SIM800.mqttClient.pass = "pw275PG668";
+		SIM800.mqttClient.clientID = "3he0ww21";
+		SIM800.mqttClient.keepAliveInterval = 20;		
+		
+		
+		rcCapOn();
+		rcTurnOn();
+		HAL_Delay(5000);	
+		
+		char str[62] = {0};
+		char str_[128] = {0};
+
+		
+		HAL_Delay(12000);		
+		
+		MX_LPUART1_UART_Init();
+	//	RcUartInit();
+	//	MQTT_Init();	
+		HAL_Delay(100);	
+		
+		MQTT_Init();
+
+		SIM800_SendCommand("AT+CPOWD=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(5000);	
+		rcTurnOff();	
+		rcCapOff();			
+		HAL_Delay(5000);	
+
+		
+		HAL_Delay(47000);		
+							 
+		
+		
+	/*
+		testPinOn();
+
+	//перенести в отдельную функцию
+
+	// HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
+	// HAL_RTCEx_SetWakeUpTimer(&hrtc);
+
+	*/
 }
