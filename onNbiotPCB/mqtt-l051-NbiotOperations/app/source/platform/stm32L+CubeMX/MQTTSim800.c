@@ -362,7 +362,7 @@ int MQTT_Init(void)
 		localCnt = 3;
 		while(localCnt--)
 		{
-			//	Checking SIM card
+			//	
 			for (char i=0; i<3; i++ )
 			{
 				error_l = SIM800_SendCommand("AT+CGREG?\r\n", "OK\r\n", 100/*CMD_DELAY*/);
@@ -382,7 +382,7 @@ int MQTT_Init(void)
 			{
 				//	Set phone functionality
 				SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-				HAL_Delay(5000);		
+				HAL_Delay(5000);	
 				//	Set phone functionality
 				SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 				HAL_Delay(10000);
@@ -400,16 +400,19 @@ int MQTT_Init(void)
 //	SIM800_SendCommand("AT+COPS?\r\n", "OK\r\n", 100/*CMD_DELAY*/);	
 //  SIM800_SendCommand("AT+CGCONTRDP\r\n", "OK\r\n", 100/*CMD_DELAY*/);		
 		
-
-    if (error_l == 0)
-    {
-        MQTT_Connect();
-        return 0;
-    }
-    else
-    {
-        return error_l;
-    }
+		
+		MQTT_Connect();
+		
+		
+//    if (error_l == 0)
+//    {
+//        MQTT_Connect();
+//        return 0;
+//    }
+//    else
+//    {
+//        return error_l;
+//    }
 }
 
 uint32_t clk=1001;
@@ -424,7 +427,7 @@ void MQTT_Connect(void)
     char str[128] = {0};
 	
 		SIM800_SendCommand("AT+CMQTSYNC=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(3000);		
+		HAL_Delay(3000);
 
 //		snprintf(str, sizeof(str), "AT+CSTT=\"%s\",\"%s\",\"%s\"\r\n", SIM800.sim.apn, SIM800.sim.apn_user,
 //             SIM800.sim.apn_pass);
@@ -677,7 +680,7 @@ void rcSending(void)
 
 		
 		HAL_Delay(47000);		
-							 
+		HAL_Delay(240000);							 
 		
 		
 	/*
