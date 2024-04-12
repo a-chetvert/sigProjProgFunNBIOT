@@ -294,8 +294,27 @@ int MQTT_Init(void)
 			//	Checking SIM card
 			for (char i=0; i<3; i++ )
 			{
+				
+				
+				#if (BAND_STYLE == BAND_ALL)
+					error_l = SIM800_SendCommand("AT+CBAND=3,8,20\r\n", "OK\r\n", CMD_DELAY);
+				#endif		
+
+				#if (BAND_STYLE == BAND_3)
+					error_l = SIM800_SendCommand("AT+CBAND=3\r\n", "OK\r\n", CMD_DELAY);
+				#endif		
+
+				#if (BAND_STYLE == BAND_8)
+					error_l = SIM800_SendCommand("AT+CBAND=8\r\n", "OK\r\n", CMD_DELAY);
+				#endif		
+
+				#if (BAND_STYLE == BAND_20)
+					error_l = SIM800_SendCommand("AT+CBAND=20\r\n", "OK\r\n", CMD_DELAY);
+				#endif		
+				
+				
 				//Set mobile operation band
-				error_l = SIM800_SendCommand("AT+CBAND=3,8,20\r\n", "OK\r\n", CMD_DELAY);
+
 				
 				if(error_l == 0)
 				{
@@ -437,55 +456,64 @@ void MQTT_Connect(void)
 		SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-3he0ww21\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);		
 		HAL_Delay(3000);	
-			
-		SIM800_SendCommand("AT+CMQSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+
+		SIM800_SendCommand("AT+CMQSUB=0,\"tpd\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"tpd\",0,0,0,4,\"1027\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"tpd\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);			
+	
+		SIM800_SendCommand("AT+CMQSUB=0,\"tmn\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"tmn\",0,0,0,4,\"1027\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"tmn\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);		
+
+
 		
+		SIM800_SendCommand("AT+CMQSUB=0,\"hrp\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"hrp\",0,0,0,4,\"1020\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"hrp\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);			
+
 		
-		sprintf(str , "AT+CMQPUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0,0,0,4,\"%lu\"\r\n", clk++);
-		
+		SIM800_SendCommand("AT+CMQSUB=0,\"lgt\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);		
+		sprintf(str , "AT+CMQPUB=0,\"lgt\",0,0,0,4,\"%lu\"\r\n", clk++);
 		SIM800_SendCommand(str, "OK\r\n", 100/*CMD_DELAY*/);
 		
 //		SIM800_SendCommand("AT+CMQPUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",0,0,0,4,\"1024\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);	
-		SIM800_SendCommand("AT+CMQUNSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"lgt\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);	
 		
-		SIM800_SendCommand("AT+CMQSUB=0,\"trapdoor\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);
-		SIM800_SendCommand("AT+CMQPUB=0,\"trapdoor\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
-		SIM800_SendCommand("AT+CMQUNSUB=0,\"trapdoor\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
 		
-		SIM800_SendCommand("AT+CMQSUB=0,\"somehouropen\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);
-		SIM800_SendCommand("AT+CMQPUB=0,\"somehouropen\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
-		SIM800_SendCommand("AT+CMQUNSUB=0,\"somehouropen\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
 		
-		SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+
+		
+
+		
+
+		
+
+		
+		SIM800_SendCommand("AT+CMQSUB=0,\"vc\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);
-		SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		SIM800_SendCommand("AT+CMQPUB=0,\"vc\",0,0,0,4,\"1020\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);	
-		SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"vc\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+
+		SIM800_SendCommand("AT+CMQSUB=0,\"cst\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);
+		SIM800_SendCommand("AT+CMQPUB=0,\"cst\",0,0,0,4,\"1020\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(800);	
+		SIM800_SendCommand("AT+CMQUNSUB=0,\"cst\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);		
-		
-		SIM800_SendCommand("AT+CMQSUB=0,\"timeNow\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);
-		SIM800_SendCommand("AT+CMQPUB=0,\"timeNow\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
-		SIM800_SendCommand("AT+CMQUNSUB=0,\"timeNow\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);		
-		
-		SIM800_SendCommand("AT+CMQSUB=0,\"vCell\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);
-		SIM800_SendCommand("AT+CMQPUB=0,\"vCell\",0,0,0,4,\"1023\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
-		SIM800_SendCommand("AT+CMQUNSUB=0,\"vCell\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);	
-			
 			
 			
 		//	Disconnect MQTT	
@@ -677,11 +705,10 @@ void rcSending(void)
 		rcTurnOff();	
 		rcCapOff();			
 		HAL_Delay(5000);	
-
 		
 		HAL_Delay(47000);		
-		HAL_Delay(240000);							 
-		
+//		HAL_Delay(240000);							 
+//		
 		
 	/*
 		testPinOn();

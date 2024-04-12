@@ -28,6 +28,16 @@
 #define MODE 				0
 
 
+#define BAND_ALL 					0
+#define BAND_3						1
+#define BAND_8						2
+#define BAND_20					 	3
+// <o>Select band
+// <0=> ALL
+// <1=> B3 (UL: 1710-1785, DL: 1805-1880 MHz)
+// <2=> B8 (UL: 880-915, DL: 925-960 MHz)
+// <3=> B20 (UL: 832-862, DL: 791-821 MHz)
+#define BAND_STYLE 1
 
 
 ////<<< end of configuration section >>>
