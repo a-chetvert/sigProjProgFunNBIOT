@@ -264,6 +264,9 @@ int MQTT_Init(void)
 				HAL_Delay(CMD_DELAY);		
 			}
 			
+			
+			
+			
 			// задефайнить
 			// если симку не определяет, то сделать так:
 			// проверь работу этого алгоритма
@@ -282,11 +285,92 @@ int MQTT_Init(void)
 			}
 		}
 		
-		SIM800_SendCommand("AT*MCGDEFCONT=\"IP\",\"iot\"\r\n", "OK\r\n", CMD_DELAY);
-		HAL_Delay(100);				
-		SIM800_SendCommand("AT+CREVHEX=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(300);				
+
+//		HAL_Delay(500);	
+//		SIM800_SendCommand("AT+CFUN=0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(1500);	
+		SIM800_SendCommand("AT+CGDCONT=1,\"IP\",\"ctnb\"\r\n", "OK\r\n", CMD_DELAY);		
+		HAL_Delay(500);	
+		SIM800_SendCommand("AT+CFUN=1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(1500);	
+		SIM800_SendCommand("AT+CGATT?\r\n", "OK\r\n", 100/*CMD_DELAY*/);	
+		HAL_Delay(1500);	
+		SIM800_SendCommand("AT+CGNAPN\r\n", "OK\r\n", 100/*CMD_DELAY*/);	
 		
+		HAL_Delay(500);	
+		SIM800_SendCommand("AT+CNCFG=0,1,\"ctnb\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);	
+		HAL_Delay(500);	
+		SIM800_SendCommand("AT+CNACT=0,1\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);		
+		SIM800_SendCommand("AT+CNACT?\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);	
+		SIM800_SendCommand("AT+CBAND?\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);	
+		
+		SIM800_SendCommand("AT+SMCONF=\"URL\",\"dev.rightech.io\",1883\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		HAL_Delay(1500);	
+		SIM800_SendCommand("AT+SMCONF=\"KEEPTIME\",60\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);	
+		SIM800_SendCommand("AT+SMCONF=\"CLEANSS\",1\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);	
+		
+		
+		SIM800_SendCommand("AT+SMCONF=\"CLIENTID\",\"mqtt-a_chetvert-3he0ww21\"\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);	
+		SIM800_SendCommand("AT+SMCONF=\"USERNAME\",\"krsn\"\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);			
+		
+		SIM800_SendCommand("AT+SMCONF=\"PASSWORD\",\"pw275PG668\"\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(500);			
+		
+//		
+//		SIM800_SendCommand("AT+CMQPUB=0,\"hrp\",0,0,0,4,\"1020\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+//		
+	
+		SIM800_SendCommand("AT+SMPUB=\"lgt\",3,0,0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		
+		HAL_Delay(70);	
+		SIM800_SendCommand("215\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		//\"1027\"	
+		
+//		
+//		SIM800_SendCommand("AT+SMCONF=\"TOPIC\",\"lgt\"\r\n", "OK\r\n", CMD_DELAY);
+//		HAL_Delay(500);				
+//		SIM800_SendCommand("AT+SMCONF=\"MESSAGE\",\"12\"\r\n", "OK\r\n", CMD_DELAY);
+//		HAL_Delay(500);	
+
+
+
+HAL_Delay(10000);	
+
+
+
+		SIM800_SendCommand("AT+SMCONN\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(5000);	
+		
+		
+//		SIM800_SendCommand("AT+SMSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\",1\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+//		HAL_Delay(800);
+
+		
+		HAL_Delay(800);	
+//		SIM800_SendCommand("AT+SMUNSUB=0,\"mqtt-a_chetvert-3he0ww21/lgt\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+//		HAL_Delay(800);			
+//	
+
+		
+//		SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-3he0ww21\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+//		
+//		pw275PG668
+//		
+//		
+//		"USERNAME" 
+		
+		SIM800_SendCommand("AT+SMCONN\r\n", "OK\r\n", CMD_DELAY);
+		HAL_Delay(3000);	
+		
+		
+		HAL_Delay(15000);	
 		localCnt = 1;
 		
 		while(localCnt)
