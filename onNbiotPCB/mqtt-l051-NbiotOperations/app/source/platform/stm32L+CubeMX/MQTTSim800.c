@@ -478,11 +478,11 @@ void MQTT_Connect(void)
 		SIM800_SendCommand("AT+CMQPUB=0,\"hrp\",0,0,0,4,\"1020\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);	
 		SIM800_SendCommand("AT+CMQUNSUB=0,\"hrp\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);			
+		HAL_Delay(10000);			
 
 		
 		SIM800_SendCommand("AT+CMQSUB=0,\"lgt\",0\r\n", "OK\r\n", 100/*CMD_DELAY*/);
-		HAL_Delay(800);		
+		HAL_Delay(8000);		
 		sprintf(str , "AT+CMQPUB=0,\"lgt\",0,0,0,4,\"%lu\"\r\n", clk++);
 		SIM800_SendCommand(str, "OK\r\n", 100/*CMD_DELAY*/);
 		
