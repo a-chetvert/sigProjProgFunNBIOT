@@ -422,6 +422,8 @@ int MQTT_Init(void)
 		
 		MQTT_Connect();
 		
+		//временно 28 05 
+				return 1;
 		
 //    if (error_l == 0)
 //    {

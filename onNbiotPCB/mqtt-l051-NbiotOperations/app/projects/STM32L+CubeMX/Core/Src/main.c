@@ -107,6 +107,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 
+
 /* USER CODE END 0 */
 
 /**
@@ -142,6 +143,10 @@ int main(void)
   MX_ADC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+	//возможно убрать иниты
+	//проверить ток! перед этим
+	
+	HAL_Delay(TIME_BF_START);
 	//__HAL_UART_ENABLE_IT(&hlpuart1,UART_IT_RXNE);
   /* USER CODE END 2 */
 
@@ -150,7 +155,32 @@ int main(void)
 	
   while (1)
   {
+		//	включение доступа к BKP регистрам
+		//	есть в SystemClock_Config(); 
+		// 	проверить, есть ли в этом смысл здесь
+		HAL_PWR_EnableBkUpAccess();
 		
+
+		#if (STYLE_BKP == FIRST)	
+				allBKUPClear();
+		
+				#if (STYLE_GSM == GSM)
+					//	работа с sim7020
+					rcSending();
+				#endif
+				
+				#if (STYLE_GSM == WO_GSM)
+					testGSMMessSend();
+				#endif	
+		#endif			
+		
+		//	чтение данных из регистров
+		allBKUPRead();
+		
+		#if ((STYLE == TEST_BKP)||(STYLE == TEST))
+			testUartBKUPSend();
+		#endif				
+
 		#if ((STYLE == PRODUCTION)||(STYLE == TEST_ALL)||(STYLE == TEST_LIGHT_SENS))
 			HAL_Delay(100);
 			adcWork();

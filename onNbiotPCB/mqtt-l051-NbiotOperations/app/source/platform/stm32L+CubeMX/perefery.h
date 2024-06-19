@@ -33,14 +33,19 @@
 
 void checkBatOn(void);
 void checkBatOff(void);
-void backupOn(void);
-void backupOff(void);
 void testPinOn(void);
 void testPinOff(void);
 void apdsPwrOn(void);
 void apdsPwrOff(void);
 void apdsShdnOn(void);
 void apdsShdnOff(void);
+
+void allBKUPClear(void);
+void allBKUPRead(void);
+
+
+void testUartBKUPSend(void);
+void testGSMMessSend(void);
 
 void adcWork(void);
 

@@ -55,6 +55,41 @@ void standbyStart(void)
 		HAL_PWR_EnterSTANDBYMode();
 }
 
+
+void allBKUPClear(void)
+{
+		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR1, 0);
+		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR2, 0);
+		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR3, 0);
+}
+
+
+void allBKUPRead(void)
+{
+		stateTrapdoor = HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR1);
+		someTimeOpen = HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR2);
+		timeNow = HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR3);		
+	
+
+	
+}
+
+
+void testUartBKUPSend(void)
+{
+		stateTrapdoor++;
+		MX_LPUART1_UART_Init();
+		snprintf(trans_str, 63, "\n\nBUp %d %d %d\n", (uint16_t)stateTrapdoor, (uint16_t)someTimeOpen, (uint16_t)timeNow);
+		HAL_UART_Transmit(&hlpuart1, (uint8_t*)trans_str, strlen(trans_str),5000);			
+}
+
+void testGSMMessSend(void)
+{
+		MX_LPUART1_UART_Init();
+		snprintf(trans_str, 63, "\nSend GSM\n");
+		HAL_UART_Transmit(&hlpuart1, (uint8_t*)trans_str, strlen(trans_str),5000);		
+}
+
 void adcWork(void)
 {
 		apdsPwrOn();
@@ -99,16 +134,6 @@ void checkBatOn(void)
 void checkBatOff(void)
 {
 	HAL_GPIO_WritePin(BAT_CHECK_GPIO_Port, BAT_CHECK_Pin, GPIO_PIN_RESET);
-}
-
-void backupOn(void)
-{
-	HAL_GPIO_WritePin(BACKUP_EN_GPIO_Port, BACKUP_EN_Pin, GPIO_PIN_SET);
-}
-
-void backupOff(void)
-{
-	HAL_GPIO_WritePin(BACKUP_EN_GPIO_Port, BACKUP_EN_Pin, GPIO_PIN_RESET);
 }
 
 void testPinOn(void)
