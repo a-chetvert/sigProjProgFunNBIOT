@@ -455,7 +455,7 @@ void MQTT_Connect(void)
 		SIM800_SendCommand("AT+CMQNEW=""dev.rightech.io"",\"1883\",12000,1024\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(1300);			
 
-		SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-3he0ww21\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
+		SIM800_SendCommand("AT+CMQCON=0,3,\"mqtt-a_chetvert-8hz19\",600,0,0,\"krsn\",\"pw275PG668\"\r\n", "OK\r\n", 100/*CMD_DELAY*/);
 		HAL_Delay(800);		
 		HAL_Delay(3000);	
 
